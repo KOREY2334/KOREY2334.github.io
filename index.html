@@ -1,256 +1,390 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" type="text/css" href="dep/normalize.css/normalize.css" />
-  <link rel="stylesheet" type="text/css" href="dep/Font-Awesome-master/web-fonts-with-css/css/fontawesome-all.min.css" />
-  <link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dopamine Response Patterns</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        /* Custom styles if needed, though Tailwind should cover most */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        .activity-item {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .activity-item:hover {
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+        }
+        .activity-item.active {
+            background-color: #d1fae5; /* Tailwind green-100 */
+            border-left: 4px solid #10b981; /* Tailwind green-500 */
+        }
+        /* New style for active high dopamine triggers */
+        .activity-item.active-high-dopamine {
+            background-color: #fee2e2; /* Tailwind red-100 */
+            border-left: 4px solid #ef4444; /* Tailwind red-500 */
+        }
+    </style>
 </head>
-<body lang="en">
-  <section id="main">
-    <header id="title">
-      <h1>John Doe</h1>
-      <span class="subtitle">Plaintiff, defendant &amp; witness</span>
-    </header>
-    <section class="main-block">
-      <h2>
-        <i class="fa fa-suitcase"></i> Experiences
-      </h2>
-      <section class="blocks">
-        <div class="date">
-          <span>2015</span><span>present</span>
+<body class="bg-gray-100 text-gray-800 p-4">
+
+    <div class="container mx-auto bg-white rounded-lg shadow-xl p-6">
+
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Dopamine Response Patterns</h1>
+            <p class="text-gray-600">Compare how different activities affect your dopamine levels over time.</p>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <div class="lg:w-3/4 w-full">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <canvas id="dopamineChart"></canvas>
+                </div>
+                <div class="flex justify-center mt-4 space-x-4">
+                    <button id="resetChartBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
+                        Reset Chart
+                    </button>
+                    <button id="toggleBaselineBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
+                        Hide Baseline Effects
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:w-1/4 w-full">
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold text-red-600 mb-3">High Dopamine Triggers</h2>
+                    <ul id="highDopamineList" class="space-y-2">
+                        </ul>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-green-600 mb-3">Healthy Resets</h2>
+                    <ul id="healthyResetsList" class="space-y-2">
+                        </ul>
+                </div>
+            </div>
+
         </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Some Position</h3>
-            <span class="place">Some Workplace</span>
-            <span class="location">(remote)</span>
-          </header>
-          <div>
-            <ul>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec mi ante. Etiam odio eros, placerat eu metus id, gravida eleifend odio. Vestibulum dapibus pharetra odio, egestas ullamcorper ipsum congue ac. Maecenas viverra tortor eget convallis vestibulum. Donec pulvinar venenatis est, non sollicitudin metus laoreet sed. Fusce tincidunt felis nec neque aliquet porttitor</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      <section class="blocks">
-        <div class="date">
-          <span>2014</span><span>2015</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Another Position</h3>
-            <span class="place">Some Workplace</span>
-            <span class="location">Some City, Some Country</span>
-          </header>
-          <div>
-            <ul>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      <section class="blocks">
-        <div class="date">
-          <span>2013</span><span>2014</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Yet Another Job Position</h3>
-            <span class="place">Some Workplace</span>
-            <span class="location">Some City, Some Country</span>
-          </header>
-          <div>
-            <ul>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec mi ante. Etiam odio eros, placerat eu metus id, gravida eleifend odio</li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </section>
-    <section class="main-block">
-      <h2>
-        <i class="fa fa-folder-open"></i> Selected Projects
-      </h2>
-      <section class="blocks">
-        <div class="date">
-          <span>2015</span><span>2016</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Some Project 1</h3>
-            <span class="place">Some workplace</span>
-          </header>
-          <div>
-            <ul>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec mi ante. Etiam odio eros, placerat eu metus id, gravida eleifend odio. Vestibulum dapibus pharetra odio, egestas ullamcorper ipsum congue ac</li>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec mi ante. Etiam odio eros, placerat eu metus id, gravida eleifend odio</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      <section class="blocks">
-        <div class="date">
-          <span>2014</span><span>2015</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Some Project 2</h3>
-            <span class="place">Some workplace</span>
-          </header>
-          <div>
-            <ul>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec mi ante. Etiam odio eros, placerat eu metus id, gravida eleifend odio. Vestibulum dapibus pharetra odio, egestas ullamcorper ipsum congue ac. Maecenas viverra tortor eget convallis vestibulum. Donec pulvinar venenatis est, non sollicitudin metus laoreet sed. Fusce tincidunt felis nec neque aliquet porttitor</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      <section class="blocks">
-        <div class="date">
-          <span>2014</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Some Project 3</h3>
-            <span class="place">Some workplace</span>
-          </header>
-          <div>
-            <ul>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec mi ante. Etiam odio eros, placerat eu metus id, gravida eleifend odio</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </section>
-    <section class="main-block concise">
-      <h2>
-        <i class="fa fa-graduation-cap"></i> Education
-      </h2>
-      <section class="blocks">
-        <div class="date">
-          <span>2009</span><span>2014</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Ph.D. in Forty-Two Discovery</h3>
-            <span class="place">Inexistent University</span>
-            <span class="location">Some City, Some Country</span>
-          </header>
-          <div>Relationship of the number with the answer to life, the universe and everything</div>
-        </div>
-      </section>
-      <section class="blocks">
-        <div class="date">
-          <span>2005</span><span>2009</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>LL.B. in H&aelig;matophagic Economics</h3>
-            <span class="place">Inexistent University</span>
-            <span class="location">Some City, Some Country</span>
-          </header>
-          <div>President's Scholarship</div>
-        </div>
-      </section>
-      <section class="blocks">
-        <div class="date">
-          <span>2005</span><span>2009</span>
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>B.S. in Existential Science (Double Major)</h3>
-            <span class="place">Inexistent University</span>
-            <span class="location">Some City, Some Country</span>
-          </header>
-          <div>President's Scholarship</div>
-        </div>
-      </section>
-      <section class="blocks">
-        <div class="date">
-        </div>
-        <div class="decorator">
-        </div>
-        <div class="details">
-          <header>
-            <h3>Massive Online Fee&ndash;Required Course (selective list)</h3>
-          </header>
-          <div class="concise">
-            <ul>
-              <li>Introduction to something else</li>
-              <li>Introduction to some more useless things</li>
-              <li>Philosophy in practice</li>
-              <li>Recursive research and its impact on recursive research</li>
-              <li>Artificial politics</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </section>
-  </section>
-  <aside id="sidebar">
-    <div class="side-block" id="contact">
-      <h1>
-        Contact Info
-      </h1>
-      <ul>
-        <li><i class="fa fa-globe"></i> johndoe.gtld</li>
-        <li><i class="fab fa-linkedin"></i></i> linkedin.com/in/john</li>
-        <li><i class="fa fa-envelope"></i> me@johndoe.gtld</li>
-        <li><i class="fa fa-phone"></i> 800.000.0000</li>
-      </ul>
+
     </div>
-    <div class="side-block" id="skills">
-      <h1>
-        Skills
-      </h1>
-      <ul>
-        <li>Memes</li>
-        <li><i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-        </li>
-      </ul>
-      <ul>
-        <li>Memes</li>
-        <li><i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-        </li>
-      </ul>
-      <ul>
-        <li>Memes</li>
-        <li><i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-          <i class="fas fa-circle"></i>
-        </li>
-      </ul>
-    </div>
-  </aside>
+
+    <script>
+        // Data for dopamine levels over time (simulated)
+        // Baseline is 100%
+        // Values are percentage of baseline over time (e.g., [time_in_hours, dopamine_level_percent])
+
+        // Define time points (in hours)
+        const timePoints = Array.from({length: 25}, (_, i) => i); // 0 to 24 hours
+
+        // Function to generate a simple curve: peak and then decay
+        function generateCurve(peakValue, decayRate, baselineEffect) {
+            return timePoints.map(t => {
+                if (t === 0) return 100; // Start at baseline
+                // Simple model: rapid rise, peak, then decay towards baseline effect
+                let value = 100;
+                if (t <= 1) { // Rapid rise to peak within the first hour
+                     value = 100 + (peakValue - 100) * t;
+                } else { // Decay towards baseline effect
+                    value = peakValue * Math.exp(-decayRate * (t - 1));
+                    // Ensure it doesn't go below the baseline effect too quickly, or smoothly transition
+                    if (value < baselineEffect) {
+                         // Smooth transition from decay to baseline effect or slightly below
+                         value = baselineEffect + (value - baselineEffect) * Math.exp(-0.1 * (t - 1));
+                         if (value < baselineEffect - (100 - baselineEffect) * 0.1) {
+                            value = baselineEffect - (100 - baselineEffect) * 0.1; // Can dip slightly below baseline effect
+                         }
+                    }
+                }
+                 // Ensure it doesn't go below a certain minimum (e.g., 80%)
+                 return Math.max(value, 80);
+            });
+        }
+
+         // Function to generate a slower, more sustained curve for healthy resets
+         function generateSustainedCurve(peakValue, decayRate, sustainedLevel) {
+             return timePoints.map(t => {
+                 if (t === 0) return 100; // Start at baseline
+                 let value = 100;
+                 if (t <= 0.5) { // Slower rise to peak
+                      value = 100 + (peakValue - 100) * (t / 0.5);
+                 } else { // Slower decay towards sustained level
+                     value = peakValue + (sustainedLevel - peakValue) * (1 - Math.exp(-decayRate * (t - 0.5)));
+                 }
+                 // Ensure it doesn't go below a certain minimum (e.g., 90%)
+                 return Math.max(value, 90);
+             });
+         }
+
+
+        const dopamineData = {
+            'Baseline Dopamine Level': {
+                color: 'rgb(156, 163, 175)', // gray-400
+                data: timePoints.map(() => 100) // Stays at 100%
+            },
+            'Scrolling social media': {
+                color: 'rgb(239, 68, 68)', // red-500
+                data: generateCurve(130, 0.8, 98.4) // Peak 130%, decays, baseline effect 98.4%
+            },
+            'Watching porn': {
+                 color: 'rgb(147, 51, 234)', // violet-600
+                 data: generateCurve(182.7, 1.2, 97.5) // Peak 182.7%, decays faster, baseline effect 97.5%
+             },
+             'Binge eating junk food': {
+                 color: 'rgb(245, 158, 11)', // amber-500
+                 data: generateCurve(120.1, 0.7, 98.8) // Peak 120.1%, decays, baseline effect 98.8%
+             },
+             'Video games': {
+                 color: 'rgb(59, 130, 246)', // blue-500
+                 data: generateCurve(121.1, 0.9, 98.2) // Peak 121.1%, decays, baseline effect 98.2%
+             },
+             'Online shopping': {
+                 color: 'rgb(139, 92, 246)', // purple-500
+                 data: generateCurve(165.1, 1.0, 98.6) // Peak 165.1%, decays, baseline effect 98.6%
+             },
+             'Binge watching shows': {
+                 color: 'rgb(6, 182, 212)', // cyan-500
+                 data: generateCurve(115, 0.6, 99) // Estimated: moderate peak, slower decay
+             },
+             'Drugs and alcohol': {
+                 color: 'rgb(220, 38, 38)', // red-700 (more intense red)
+                 data: generateCurve(250, 1.5, 90) // Estimated: very high peak, faster decay, potentially lower baseline effect
+             },
+             'Gambling / trading': {
+                 color: 'rgb(251, 191, 36)', // yellow-400
+                 data: generateCurve(180, 1.1, 95) // Estimated: high peak, variable decay, potentially lower baseline effect
+             },
+             'Endless texting / dating apps': {
+                 color: 'rgb(253, 164, 46)', // orange-400
+                 data: generateCurve(125, 0.7, 98) // Estimated: moderate peak, moderate decay
+             },
+             'Chasing online validation': {
+                 color: 'rgb(244, 63, 94)', // rose-500
+                 data: generateCurve(140, 0.9, 97) // Estimated: moderate-high peak, moderate decay, potentially lower baseline effect
+             },
+             // Healthy Resets (using sustained curve)
+             'Exercise': {
+                 color: 'rgb(22, 163, 74)', // green-600
+                 data: generateSustainedCurve(115, 0.3, 105) // Estimated: moderate peak, slow decay, sustained slightly above baseline
+             },
+             'Cold exposure': {
+                 color: 'rgb(14, 165, 233)', // sky-500
+                 data: generateSustainedCurve(110, 0.2, 103) // Estimated: moderate peak, slower decay, sustained slightly above baseline
+             },
+             'Morning sunlight': {
+                 color: 'rgb(251, 146, 60)', // orange-500
+                 data: generateSustainedCurve(105, 0.1, 102) // Estimated: mild peak, very slow decay, sustained slightly above baseline
+             },
+             'Deep work / focus': {
+                 color: 'rgb(67, 56, 202)', // indigo-700
+                 data: generateSustainedCurve(110, 0.2, 105) // Estimated: moderate peak, slow decay, sustained slightly above baseline
+             },
+             'Meditation': {
+                 color: 'rgb(5, 150, 105)', // emerald-600
+                 data: timePoints.map(() => 100) // Estimated: maintains baseline, focus on stability
+             },
+             'Long walks': {
+                 color: 'rgb(34, 197, 94)', // green-500
+                 data: generateSustainedCurve(108, 0.15, 104) // Estimated: mild-moderate peak, slow decay, sustained slightly above baseline
+             },
+             'Sex with connection': {
+                 color: 'rgb(236, 72, 153)', // pink-500
+                 data: generateCurve(150, 0.8, 100) // Estimated: significant peak, decays back to baseline
+             },
+             'Reading physical books': {
+                 color: 'rgb(124, 58, 237)', // violet-700
+                 data: generateSustainedCurve(105, 0.1, 101) // Estimated: mild peak, very slow decay, sustained slightly above baseline
+             },
+             'Fasting': {
+                 color: 'rgb(107, 114, 128)', // gray-500
+                 data: timePoints.map((t) => t < 12 ? 100 : 100 + (t - 12) * 0.5) // Simplified: baseline for 12 hrs, then slight increase
+             }
+        };
+
+        // Define which activities are high dopamine triggers for styling purposes
+        const highDopamineTriggers = [
+            'Scrolling social media',
+            'Watching porn',
+            'Binge eating junk food',
+            'Video games',
+            'Online shopping',
+            'Binge watching shows',
+            'Drugs and alcohol',
+            'Gambling / trading',
+            'Endless texting / dating apps',
+            'Chasing online validation'
+        ];
+
+
+        // Populate the lists and add event listeners
+        const highDopamineList = document.getElementById('highDopamineList');
+        const healthyResetsList = document.getElementById('healthyResetsList');
+
+        for (const activity in dopamineData) {
+            if (activity === 'Baseline Dopamine Level') continue; // Skip baseline for lists
+
+            const listItem = document.createElement('li');
+            listItem.classList.add('activity-item', 'p-2', 'rounded-md', 'border', 'border-gray-300');
+            listItem.textContent = activity;
+            listItem.dataset.activity = activity; // Store activity name
+
+            listItem.addEventListener('click', () => toggleActivity(activity, listItem));
+
+            if (highDopamineTriggers.includes(activity)) {
+                highDopamineList.appendChild(listItem);
+            } else {
+                healthyResetsList.appendChild(listItem);
+            }
+        }
+
+        // Chart Initialization
+        const ctx = document.getElementById('dopamineChart').getContext('2d');
+        let dopamineChart;
+
+        function initializeChart() {
+             if (dopamineChart) {
+                 dopamineChart.destroy(); // Destroy existing chart if any
+             }
+
+             const datasets = [{
+                 label: 'Baseline Dopamine Level',
+                 data: dopamineData['Baseline Dopamine Level'].data.map((val, index) => ({x: timePoints[index], y: val})),
+                 borderColor: dopamineData['Baseline Dopamine Level'].color,
+                 borderWidth: 2,
+                 fill: false,
+                 tension: 0.4,
+                 pointRadius: 0, // Hide points
+                 hidden: false // Always show baseline initially
+             }];
+
+             // Add initially active items if any (optional, based on desired default view)
+             // For now, only baseline is shown initially
+
+             dopamineChart = new Chart(ctx, {
+                 type: 'line',
+                 data: {
+                     labels: timePoints.map(t => `${t}h`), // Labels for X-axis
+                     datasets: datasets
+                 },
+                 options: {
+                     responsive: true,
+                     maintainAspectRatio: false, // Allow chart to fill container
+                     plugins: {
+                         legend: {
+                             position: 'top',
+                         },
+                         title: {
+                             display: true,
+                             text: 'Dopamine Levels Over Time'
+                         }
+                     },
+                     scales: {
+                         x: {
+                             title: {
+                                 display: true,
+                                 text: 'Time (hours)'
+                             }
+                         },
+                         y: {
+                             title: {
+                                 display: true,
+                                 text: 'Dopamine Level (%)'
+                             },
+                             min: 80, // Adjusted minimum based on data
+                             max: 260 // Adjusted maximum based on data
+                         }
+                     }
+                 }
+             });
+             // Set initial height for the chart container to ensure it's visible
+             ctx.canvas.parentNode.style.height = '400px'; // Adjust as needed
+        }
+
+        // Toggle activity on the chart
+        function toggleActivity(activity, listItem) {
+            const datasetIndex = dopamineChart.data.datasets.findIndex(dataset => dataset.label === activity);
+
+            if (datasetIndex === -1) {
+                // Activity not on chart, add it
+                const newDataset = {
+                    label: activity,
+                    data: dopamineData[activity].data.map((val, index) => ({x: timePoints[index], y: val})),
+                    borderColor: dopamineData[activity].color,
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 0, // Hide points
+                    hidden: false // Show when added
+                };
+                dopamineChart.data.datasets.push(newDataset);
+
+                // Add active class
+                listItem.classList.add('active');
+                // Add specific class for high dopamine triggers
+                if (highDopamineTriggers.includes(activity)) {
+                    listItem.classList.add('active-high-dopamine');
+                }
+
+            } else {
+                // Activity is on chart, remove it
+                dopamineChart.data.datasets.splice(datasetIndex, 1);
+
+                // Remove active classes
+                listItem.classList.remove('active');
+                listItem.classList.remove('active-high-dopamine');
+            }
+
+            dopamineChart.update(); // Update the chart
+        }
+
+        // Reset Chart Button
+        document.getElementById('resetChartBtn').addEventListener('click', () => {
+            // Keep only the baseline dataset
+            dopamineChart.data.datasets = dopamineChart.data.datasets.filter(dataset => dataset.label === 'Baseline Dopamine Level');
+            dopamineChart.update();
+
+            // Remove 'active' and 'active-high-dopamine' classes from all list items
+            document.querySelectorAll('.activity-item').forEach(item => {
+                item.classList.remove('active');
+                item.classList.remove('active-high-dopamine');
+            });
+        });
+
+        // Toggle Baseline Button
+        document.getElementById('toggleBaselineBtn').addEventListener('click', (event) => {
+            const baselineDataset = dopamineChart.data.datasets.find(dataset => dataset.label === 'Baseline Dopamine Level');
+            if (baselineDataset) {
+                baselineDataset.hidden = !baselineDataset.hidden; // Toggle hidden state
+                dopamineChart.update();
+
+                // Update button text and color
+                if (baselineDataset.hidden) {
+                    event.target.textContent = 'Show Baseline Effects';
+                     event.target.classList.replace('bg-gray-500', 'bg-green-500');
+                     event.target.classList.replace('hover:bg-gray-600', 'hover:bg-green-600');
+                } else {
+                    event.target.textContent = 'Hide Baseline Effects';
+                     event.target.classList.replace('bg-green-500', 'bg-gray-500');
+                     event.target.classList.replace('hover:bg-green-600', 'hover:bg-gray-600');
+                }
+            }
+        });
+
+
+        // Initialize the chart when the page loads
+        window.onload = initializeChart;
+
+        // Make chart responsive on window resize
+        window.addEventListener('resize', () => {
+             if (dopamineChart) {
+                 dopamineChart.resize();
+             }
+         });
+
+    </script>
+
 </body>
 </html>
