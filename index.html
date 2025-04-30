@@ -14,6 +14,9 @@
         .activity-item {
             cursor: pointer;
             transition: background-color 0.2s ease;
+            padding: 8px; /* Tailwind p-2 */
+            border-radius: 6px; /* Tailwind rounded-md */
+            border: 1px solid #d1d5db; /* Tailwind border-gray-300 */
         }
         .activity-item:hover {
             background-color: #e5e7eb; /* Tailwind gray-200 */
@@ -26,6 +29,10 @@
         .activity-item.active-high-dopamine {
             background-color: #fee2e2; /* Tailwind red-100 */
             border-left: 4px solid #ef4444; /* Tailwind red-500 */
+        }
+         /* Hide controls as they are no longer needed */
+        .controls {
+            display: none !important;
         }
     </style>
 </head>
@@ -77,30 +84,30 @@
         // Baseline is 100%
         // Values are percentage of baseline over time (e.g., [time_in_hours, dopamine_level_percent])
 
-        // Define time points (in hours)
-        const timePoints = Array.from({length: 25}, (_, i) => i); // 0 to 24 hours
+        // Define time points (in hours) - Changed to 0-8 hours
+        const timePoints = Array.from({length: 9}, (_, i) => i); // 0 to 8 hours
 
-        // Function to generate a simple curve: peak and then decay
+        // Function to generate a simple curve: peak, decay, and then approach baseline
         function generateCurve(peakValue, decayRate, baselineEffect) {
             return timePoints.map(t => {
                 if (t === 0) return 100; // Start at baseline
-                // Simple model: rapid rise, peak, then decay towards baseline effect
+
                 let value = 100;
                 if (t <= 1) { // Rapid rise to peak within the first hour
                      value = 100 + (peakValue - 100) * t;
-                } else { // Decay towards baseline effect
-                    value = peakValue * Math.exp(-decayRate * (t - 1));
-                    // Ensure it doesn't go below the baseline effect too quickly, or smoothly transition
-                    if (value < baselineEffect) {
-                         // Smooth transition from decay to baseline effect or slightly below
-                         value = baselineEffect + (value - baselineEffect) * Math.exp(-0.1 * (t - 1));
-                         if (value < baselineEffect - (100 - baselineEffect) * 0.1) {
-                            value = baselineEffect - (100 - baselineEffect) * 0.1; // Can dip slightly below baseline effect
-                         }
-                    }
+                } else { // Decay from peak, then approach baselineEffect
+                    // Initial decay
+                    let decayedValue = peakValue * Math.exp(-decayRate * (t - 1));
+
+                    // Smooth transition to approach baselineEffect
+                    // Use a factor that increases over time to pull the value towards baselineEffect
+                    let approachFactor = 1 - Math.exp(-0.4 * (t - 1)); // Adjusted approach factor for shorter time scale
+                    value = decayedValue * (1 - approachFactor) + baselineEffect * approachFactor;
+
+                    // Ensure it doesn't go below a certain minimum (e.g., 80%)
+                    value = Math.max(value, 80);
                 }
-                 // Ensure it doesn't go below a certain minimum (e.g., 80%)
-                 return Math.max(value, 80);
+                 return value;
             });
         }
 
@@ -120,89 +127,92 @@
          }
 
 
-        const dopamineData = {
+        // Default data for dopamine levels and adjustable parameters
+        const dopamineData = { // Renamed from defaultDopamineData as it's no longer just defaults
             'Baseline Dopamine Level': {
                 color: 'rgb(156, 163, 175)', // gray-400
                 data: timePoints.map(() => 100) // Stays at 100%
             },
             'Scrolling social media': {
                 color: 'rgb(239, 68, 68)', // red-500
-                data: generateCurve(130, 0.8, 98.4) // Peak 130%, decays, baseline effect 98.4%
+                peak: 130, decay: 0.8, baselineEffect: 98.4, type: 'curve'
             },
             'Watching porn': {
                  color: 'rgb(147, 51, 234)', // violet-600
-                 data: generateCurve(182.7, 1.2, 97.5) // Peak 182.7%, decays faster, baseline effect 97.5%
+                 peak: 182.7, decay: 1.2, baselineEffect: 97.5, type: 'curve'
              },
              'Binge eating junk food': {
                  color: 'rgb(245, 158, 11)', // amber-500
-                 data: generateCurve(120.1, 0.7, 98.8) // Peak 120.1%, decays, baseline effect 98.8%
+                 peak: 120.1, decay: 0.7, baselineEffect: 98.8, type: 'curve'
              },
              'Video games': {
                  color: 'rgb(59, 130, 246)', // blue-500
-                 data: generateCurve(121.1, 0.9, 98.2) // Peak 121.1%, decays, baseline effect 98.2%
+                 peak: 121.1, decay: 0.9, baselineEffect: 98.2, type: 'curve'
              },
              'Online shopping': {
                  color: 'rgb(139, 92, 246)', // purple-500
-                 data: generateCurve(165.1, 1.0, 98.6) // Peak 165.1%, decays, baseline effect 98.6%
+                 peak: 165.1, decay: 1.0, baselineEffect: 98.6, type: 'curve'
              },
              'Binge watching shows': {
                  color: 'rgb(6, 182, 212)', // cyan-500
-                 data: generateCurve(115, 0.6, 99) // Estimated: moderate peak, slower decay
+                 peak: 115, decay: 0.6, baselineEffect: 99, type: 'curve' // Estimated
              },
              'Drugs and alcohol': {
                  color: 'rgb(220, 38, 38)', // red-700 (more intense red)
-                 data: generateCurve(250, 1.5, 90) // Estimated: very high peak, faster decay, potentially lower baseline effect
+                 peak: 250, decay: 1.5, baselineEffect: 90, type: 'curve' // Estimated
              },
              'Gambling / trading': {
                  color: 'rgb(251, 191, 36)', // yellow-400
-                 data: generateCurve(180, 1.1, 95) // Estimated: high peak, variable decay, potentially lower baseline effect
+                 peak: 180, decay: 1.1, baselineEffect: 95, type: 'curve' // Estimated
              },
              'Endless texting / dating apps': {
                  color: 'rgb(253, 164, 46)', // orange-400
-                 data: generateCurve(125, 0.7, 98) // Estimated: moderate peak, moderate decay
+                 peak: 125, decay: 0.7, baselineEffect: 98, type: 'curve' // Estimated
              },
              'Chasing online validation': {
                  color: 'rgb(244, 63, 94)', // rose-500
-                 data: generateCurve(140, 0.9, 97) // Estimated: moderate-high peak, moderate decay, potentially lower baseline effect
+                 peak: 140, decay: 0.9, baselineEffect: 97, type: 'curve' // Estimated
              },
              // Healthy Resets (using sustained curve)
              'Exercise': {
                  color: 'rgb(22, 163, 74)', // green-600
-                 data: generateSustainedCurve(115, 0.3, 105) // Estimated: moderate peak, slow decay, sustained slightly above baseline
+                 peak: 115, decay: 0.3, sustained: 105, type: 'sustained' // Estimated
              },
              'Cold exposure': {
                  color: 'rgb(14, 165, 233)', // sky-500
-                 data: generateSustainedCurve(110, 0.2, 103) // Estimated: moderate peak, slower decay, sustained slightly above baseline
+                 peak: 110, decay: 0.2, sustained: 103, type: 'sustained' // Estimated
              },
              'Morning sunlight': {
                  color: 'rgb(251, 146, 60)', // orange-500
-                 data: generateSustainedCurve(105, 0.1, 102) // Estimated: mild peak, very slow decay, sustained slightly above baseline
+                 peak: 105, decay: 0.1, sustained: 102, type: 'sustained' // Estimated
              },
              'Deep work / focus': {
                  color: 'rgb(67, 56, 202)', // indigo-700
-                 data: generateSustainedCurve(110, 0.2, 105) // Estimated: moderate peak, slow decay, sustained slightly above baseline
+                 peak: 110, decay: 0.2, sustained: 105, type: 'sustained' // Estimated
              },
              'Meditation': {
                  color: 'rgb(5, 150, 105)', // emerald-600
-                 data: timePoints.map(() => 100) // Estimated: maintains baseline, focus on stability
+                 peak: 100, decay: 0, sustained: 100, type: 'sustained' // Estimated: maintains baseline
              },
              'Long walks': {
                  color: 'rgb(34, 197, 94)', // green-500
-                 data: generateSustainedCurve(108, 0.15, 104) // Estimated: mild-moderate peak, slow decay, sustained slightly above baseline
+                 peak: 108, decay: 0.15, sustained: 104, type: 'sustained' // Estimated
              },
              'Sex with connection': {
                  color: 'rgb(236, 72, 153)', // pink-500
-                 data: generateCurve(150, 0.8, 100) // Estimated: significant peak, decays back to baseline
+                 peak: 150, decay: 0.8, baselineEffect: 100, type: 'curve' // Estimated
              },
              'Reading physical books': {
                  color: 'rgb(124, 58, 237)', // violet-700
-                 data: generateSustainedCurve(105, 0.1, 101) // Estimated: mild peak, very slow decay, sustained slightly above baseline
+                 peak: 105, decay: 0.1, sustained: 101, type: 'sustained' // Estimated
              },
              'Fasting': {
                  color: 'rgb(107, 114, 128)', // gray-500
-                 data: timePoints.map((t) => t < 12 ? 100 : 100 + (t - 12) * 0.5) // Simplified: baseline for 12 hrs, then slight increase
+                 // This one is more complex, maybe keep it fixed or simplify
+                 data: timePoints.map((t) => t < timePoints.length / 2 ? 100 : 100 + (t - timePoints.length / 2) * 0.5), type: 'fixed' // Simplified: baseline for half the time, then slight increase
              }
         };
+
 
         // Define which activities are high dopamine triggers for styling purposes
         const highDopamineTriggers = [
@@ -227,10 +237,19 @@
             if (activity === 'Baseline Dopamine Level') continue; // Skip baseline for lists
 
             const listItem = document.createElement('li');
-            listItem.classList.add('activity-item', 'p-2', 'rounded-md', 'border', 'border-gray-300');
-            listItem.textContent = activity;
+            listItem.classList.add('activity-item'); // Add base class
+            listItem.textContent = activity; // Set text content
+
+            // Add controls div (still needed for structure, but will be hidden by CSS)
+            const controlsDiv = document.createElement('div');
+            controlsDiv.classList.add('controls');
+            // No input fields are added here
+
+            listItem.appendChild(controlsDiv); // Append controls div
+
             listItem.dataset.activity = activity; // Store activity name
 
+            // Add click listener to the list item
             listItem.addEventListener('click', () => toggleActivity(activity, listItem));
 
             if (highDopamineTriggers.includes(activity)) {
@@ -260,9 +279,6 @@
                  hidden: false // Always show baseline initially
              }];
 
-             // Add initially active items if any (optional, based on desired default view)
-             // For now, only baseline is shown initially
-
              dopamineChart = new Chart(ctx, {
                  type: 'line',
                  data: {
@@ -286,15 +302,17 @@
                              title: {
                                  display: true,
                                  text: 'Time (hours)'
-                             }
+                             },
+                              min: 0, // Ensure min is 0
+                              max: timePoints.length - 1 // Ensure max matches the last time point
                          },
                          y: {
                              title: {
                                  display: true,
                                  text: 'Dopamine Level (%)'
                              },
-                             min: 80, // Adjusted minimum based on data
-                             max: 260 // Adjusted maximum based on data
+                             min: 50, // Adjusted minimum based on potential lower baseline effect
+                             max: 300 // Adjusted maximum based on potential higher peaks
                          }
                      }
                  }
@@ -309,9 +327,27 @@
 
             if (datasetIndex === -1) {
                 // Activity not on chart, add it
+                 let activityData;
+                 if (dopamineData[activity].type === 'curve') {
+                     activityData = generateCurve(
+                         dopamineData[activity].peak,
+                         dopamineData[activity].decay,
+                         dopamineData[activity].baselineEffect
+                     );
+                 } else if (dopamineData[activity].type === 'sustained') {
+                      activityData = generateSustainedCurve(
+                          dopamineData[activity].peak,
+                          dopamineData[activity].decay,
+                          dopamineData[activity].sustained
+                      );
+                 } else if (dopamineData[activity].type === 'fixed') {
+                     activityData = dopamineData[activity].data; // Use fixed data
+                 }
+
+
                 const newDataset = {
                     label: activity,
-                    data: dopamineData[activity].data.map((val, index) => ({x: timePoints[index], y: val})),
+                    data: activityData.map((val, index) => ({x: timePoints[index], y: val})),
                     borderColor: dopamineData[activity].color,
                     borderWidth: 2,
                     fill: false,
@@ -323,10 +359,10 @@
 
                 // Add active class
                 listItem.classList.add('active');
-                // Add specific class for high dopamine triggers
                 if (highDopamineTriggers.includes(activity)) {
                     listItem.classList.add('active-high-dopamine');
                 }
+
 
             } else {
                 // Activity is on chart, remove it
@@ -368,7 +404,7 @@
                 } else {
                     event.target.textContent = 'Hide Baseline Effects';
                      event.target.classList.replace('bg-green-500', 'bg-gray-500');
-                     event.target.classList.replace('hover:bg-green-600', 'hover:bg-gray-600');
+                     event.target.classList.replace('hover:bg-gray-600', 'hover:bg-gray-600');
                 }
             }
         });
